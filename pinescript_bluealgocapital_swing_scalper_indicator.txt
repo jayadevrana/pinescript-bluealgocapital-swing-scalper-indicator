@@ -1,0 +1,761 @@
+//@version=5
+indicator('BlueAlgoCapital Swing Scalper',overlay = true,max_lines_count = 500)
+
+// Inputs for symbol and lot sizes
+input_symbol = input("BTCUSDm", "Symbol")
+input_account1 =input("88537489", "Account 1")
+input_lot1 = input(0.01, "Lot Size for Account 1")
+
+
+Periods = 100//input(title='ATR Period', defval=100)
+src = input(hl2, title='Source')
+Multiplier = input.float(title='Range', step=0.01, defval=0.07)*100
+changeATR = true//input(title='Change ATR Calculation Method ?', defval=true)
+showsignals = true//input(title='Show Buy/Sell Signals ?', defval=true)
+highlighting = true//input(title='Highlighter On/Off ?', defval=true)
+atr2 = ta.sma(ta.tr, Periods)
+atr = changeATR ? ta.atr(Periods) : atr2
+up = src - Multiplier * atr
+up1 = nz(up[1], up)
+up := close[1] > up1 ? math.max(up, up1) : up
+dn = src + Multiplier * atr
+dn1 = nz(dn[1], dn)
+dn := close[1] < dn1 ? math.min(dn, dn1) : dn
+trend = 1
+trend := nz(trend[1], trend)
+trend := trend == -1 and close > dn1 ? 1 : trend == 1 and close < up1 ? -1 : trend
+//upPlot = plot(trend == 1 ? up : na, title='Up Trend', style=plot.style_linebr, linewidth=2, color=color.new(color.green, 0))
+cdl = 0.395
+// Condition checks
+candle1 = high - low > cdl
+candle2 = high[1] - low > cdl
+candle8 = high[2] - low > cdl
+candle9 = high[3] - low > cdl
+candle10 = high[4] - low > cdl
+candle11 = high[5] - low > cdl
+candle12 = high[6] - low > cdl
+candle13 = high[7] - low > cdl
+candle14 = high[7] - low > cdl
+candle15 = high[9] - low > cdl
+candle21 = high[5] - low > cdl
+candle22 = high[6] - low > cdl
+candle23 = high[7] - low > cdl
+candle24 = high[7] - low > cdl
+candle25 = high[9] - low > cdl
+candle3 = high - low > cdl
+candle4 = high - low[1] > cdl
+candle5 = high - low[2] > cdl
+candle6 = high - low[3] > cdl
+candle7 = high - low[4] > cdl
+candle16 = high - low[5] > cdl
+candle17 = high - low[6] > cdl
+candle18 = high - low[7] > cdl
+candle19 = high - low[8] > cdl
+candle20 = high - low[9] > cdl
+candle26 = high - low[5] > cdl
+candle27 = high - low[6] > cdl
+candle28 = high - low[7] > cdl
+candle29 = high - low[8] > cdl
+candle30 = high - low[9] > cdl
+
+// Volume weighted buy sell condition
+volume_weighted_buy_sell = false
+
+
+
+
+bull1 = close > open 
+bull2 = close[1] > open[1]
+bull3 = close[2] > open[2] 
+bull4 = close[3] > open[3] 
+bull5 = close[4] > open[4] 
+bull6 = close[5] > open[5] 
+bull7 = close[6] > open[6] 
+bull8 = close[7] > open[7] 
+bull9 = close[8] > open[8] 
+bull10 = close[9] > open[9] 
+bull11 = close[10] > open[10] 
+bull12 = close[11] > open[11]
+bull13 = close[12] > open[12]
+bull14 = close[13] > open[13]
+bull15 = close[13] > open[13]
+bull16 = close[14] > open[14]
+bull17 = close[15] > open[15]
+bull18 = close[16] > open[16]
+
+
+bear1 = close < open 
+bear2 = close[1] < open[1] 
+bear3 = close[2] < open[2] 
+bear4 = close[3] < open[3] 
+bear5 = close[4] < open[4] 
+bear6 = close[5] < open[5] 
+bear7 = close[6] < open[6] 
+bear8 = close[7] < open[7] 
+bear9 = close[8] < open[8] 
+bear10 = close[9] < open[9] 
+bear11 = close[10] < open[10] 
+bear12 = close[11] < open[11]
+bear13 = close[12] < open[12] 
+bear14 = close[13] < open[13] 
+bear15 = close[15] < open[15] 
+bear16 = close[16] < open[16]
+bear17 = close[17] < open[17] 
+
+
+
+
+buya = false  //bull1 and bull2 and bull3 and bull4 and bull5
+sella = false  //bear1 and bear2 and bear3 and bear4 and bear5
+if candle1
+    buya := bear1 and not bear2 and high - low > cdl //buya and bull6 and bull7
+    sella := bull1 and not bull2 and high - low > cdl //sella and bear6 and bear7
+    sella
+if candle2
+    buya := bear1 and close[1] < open[1] and not bear3 and high[1] - low > cdl //buya and bull6 and bull7
+    sella := bull1 and close[1] > open[1] and not bull3 and high - low[1] > cdl //sella and bear6 and bear7
+    sella
+if candle3
+    buya := bull1 and not bull2 and high - low > cdl  //buya and bull6 and bull7
+    sella := bear1 and not bear2 and high - low > cdl //sella and bear6 and bear7
+    sella
+if candle4
+    buya := bull1 and close[1] > open[1] and not bull3 and high - low[1] > cdl  //buya and bull6 and bull7
+    sella := bear1 and close[1] < open[1] and not bear3 and high[1] - low > cdl //sella and bear6 and bear7
+    sella
+
+if candle5
+    buya := bull3 and bull2 and bull1 and not bull4 and high - low[2] > cdl  //buya and bull6 and bull7 and bull8 and bull9
+    sella := bear3 and bear2 and bear1 and not bear4  and high[2] - low > cdl  //sella and bear6 and bear7 and bear8 and bear9 
+    sella
+
+
+if candle6
+    buya := bull4 and bull3 and bull2 and bull1 and not bull5 and  high - low[3] > cdl  //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11
+    sella := bear4 and bear3 and bear2 and bear1 and not bear5  and high[3] - low > cdl  //sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11  
+    sella
+
+if candle7
+    buya := bull5 and bull4 and bull3 and bull2 and bull1 and not bull6 and  high - low[4] > cdl  //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    sella := bear5 and bear4 and bear3 and bear2 and bear1 and not bear6  and high[4] - low > cdl  //sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    sella
+
+if candle8
+    sella := bull3 and bull2 and bull1 and not bull4 and high - low[2] > cdl //buya and bull6 and bull7 and bull8 and bull9
+    buya := bear3 and bear2 and bear1 and not bear4  and high[2] - low > cdl//sella and bear6 and bear7 and bear8 and bear9 
+    buya
+
+
+if candle9
+    sella := bull4 and bull3 and bull2 and bull1 and not bull5 and  high - low[3] > cdl  //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11
+    buya := bear4 and bear3 and bear2 and bear1 and not bear5  and high[3] - low > cdl//sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11  
+    buya
+
+if candle10
+    sella := bull5 and bull4 and bull3 and bull2 and bull1 and not bull6 and  high - low[4] > cdl//buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    buya := bear5 and bear4 and bear3 and bear2 and bear1 and not bear6  and high[4] - low > cdl//sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    buya
+
+if candle11
+    sella := bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull7 and  high - low[5] > cdl //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    buya := bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear7  and high[5] - low > cdl//sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    buya
+
+if candle12
+    sella := bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull8  and  high - low[6] > cdl//buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    buya := bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear8  and high[6] - low > cdl//sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    buya
+
+if candle13
+    sella := bull8 and bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull9  and  high - low[7] > cdl//buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    buya := bear8 and bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear9 and high[7] - low > cdl //sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    buya
+
+if candle14
+    sella := bull9 and bull8 and bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull10  and  high - low[8] > cdl//buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    buya := bear9 and bear8 and bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear10  and high[8] - low > cdl//sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    buya
+
+if candle15
+    sella := bull10 and bull9 and bull8 and bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull11 and  high - low[9] > cdl //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    buya := bear10 and bear9 and bear8 and bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear11 and high[9] - low > cdl//sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    buya
+
+if candle16
+    buya := bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull7 and  high - low[5] > cdl  //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    sella := bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear7  and high[5] - low > cdl  //sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    sella
+
+if candle17
+    buya := bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull8  and  high - low[6] > cdl //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    sella := bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear8  and high[6] - low > cdl  //sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    sella
+
+if candle18
+    buya := bull8 and bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull9  and  high - low[7] > cdl  //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    sella := bear8 and bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear9 and high[7] - low > cdl  //sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    sella
+
+if candle19
+    buya := bull9 and bull8 and bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull10  and  high - low[8] > cdl //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    sella := bear9 and bear8 and bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear10  and high[8] - low > cdl  //sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    sella
+
+if candle20
+    buya := bull10 and bull9 and bull8 and bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull11 and  high - low[9] > cdl  //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    sella := bear10 and bear9 and bear8 and bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear11 and high[9] - low > cdl  //sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    sella
+
+if candle21
+    sella :=  bull11 and bull10 and bull9 and bull8 and bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull12 and  high - low[10] > cdl //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    buya := bear11 and bear10 and bear9 and bear8 and bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear12 and high[10] - low > cdl//sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    buya
+if candle22
+    sella := bull12 and bull11 and bull10 and bull9 and bull8 and bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull13 and  high - low[11] > cdl //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    buya := bear12 and bear11 and bear10 and bear9 and bear8 and bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear13 and high[11] - low > cdl//sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    buya
+
+if candle23
+    sella := bull13 and bull12 and bull11 and bull10 and bull9 and bull8 and bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull14 and  high - low[12] > cdl //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    buya := bear13 and bear12 and bear11 and bear10 and bear9 and bear8 and bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear14 and high[12] - low > cdl//sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    buya
+ 
+if candle24
+    sella := bull14 and bull13 and bull12 and bull11 and bull10 and bull9 and bull8 and bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull15 and  high - low[13] > cdl //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    buya := bear14 and bear13 and bear12 and bear11 and bear10 and bear9 and bear8 and bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear15 and high[13] - low > cdl//sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    buya 
+ 
+if candle25
+    sella := bull15 and bull14 and bull13 and bull12 and bull11 and bull10 and bull9 and bull8 and bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull16 and  high - low[14] > cdl //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    buya := bear15 and bear14 and bear13 and bear12 and bear11 and bear10 and bear9 and bear8 and bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear16 and high[14] - low > cdl//sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    buya 
+  
+if candle26
+    buya :=  bull11 and bull10 and bull9 and bull8 and bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull12 and  high - low[10] > cdl //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    sella := bear11 and bear10 and bear9 and bear8 and bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear12 and high[10] - low > cdl//sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    sella
+if candle27
+    buya := bull12 and bull11 and bull10 and bull9 and bull8 and bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull13 and  high - low[11] > cdl //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    sella := bear12 and bear11 and bear10 and bear9 and bear8 and bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear13 and high[11] - low > cdl//sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    sella
+
+if candle28
+    buya := bull13 and bull12 and bull11 and bull10 and bull9 and bull8 and bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull14 and  high - low[12] > cdl //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    sella := bear13 and bear12 and bear11 and bear10 and bear9 and bear8 and bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear14 and high[12] - low > cdl//sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    sella
+ 
+if candle29
+    buya := bull14 and bull13 and bull12 and bull11 and bull10 and bull9 and bull8 and bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull15 and  high - low[13] > cdl //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    sella := bear14 and bear13 and bear12 and bear11 and bear10 and bear9 and bear8 and bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear15 and high[13] - low > cdl//sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    sella 
+ 
+if candle30
+    buya := bull15 and bull14 and bull13 and bull12 and bull11 and bull10 and bull9 and bull8 and bull7 and bull6 and bull5 and bull4 and bull3 and bull2 and bull1 and not bull16 and  high - low[14] > cdl //buya and bull6 and bull7 and bull8 and bull9 and bull10 and bull11 and bull12 and bull13
+    sella := bear15 and bear14 and bear13 and bear12 and bear11 and bear10 and bear9 and bear8 and bear7 and bear6 and bear5 and bear4 and bear3 and bear2 and bear1 and not bear16 and high[14] - low > cdl//sella and bear6 and bear7 and bear8 and bear9 and bear10 and bear11 and bear12 and bear13
+    sella  
+
+
+buy_6 = buya
+sell_6 = sella
+
+// Define initial variables
+var float A = na
+var float B = na
+var float C = na
+var float D = na
+var float E = na
+var float F = na
+var float G = na
+var float H = na
+var float I = na
+var float J = na
+var float K = na
+var float L = na
+var float M = na
+var float N = na
+var float O = na
+var float P = na
+var float Q = na
+var float R = na
+var float S = na
+var float T = na
+var float U = na
+var float V = na
+var float W = na
+var float X = na
+var float Y = na
+var float Z = na
+
+
+
+// Perform random calculations
+A := math.sin(close) * math.cos(open) + math.tan(high) / math.exp(low)
+B := math.log(close) + math.pow(high, 2) - math.sqrt(low)
+C := (math.sin(A) * math.cos(B)) / (math.tan(C) + math.exp(D))
+D := math.log(C + A * B) - math.pow(B, 3) / math.sqrt(A + B)
+E := math.sin(D) + math.cos(C) - math.tan(B * D) / math.exp(A + B + C)
+F := math.log(E * D - C) + math.pow(A, 4) / math.sqrt(B + C + D + E)
+
+// Continue with complex operations
+G := (A + B + C) * (D - E + F) / (math.sin(A + B) + math.cos(C + D) + math.tan(E + F))
+H := math.exp(G) / (math.log(A + B + C + D + E + F) * math.sqrt(A * B * C * D * E * F))
+I := math.pow(G + H, 3) - math.sqrt(A * B * C * D * E * F * G * H)
+J := math.sin(I) + math.cos(G * H * I) - math.tan(F * E * D * C * B * A)
+
+// Further complex calculations
+K := math.log(J) + math.pow(I, 5) / math.sqrt(G + H + I + J)
+L := math.sin(K) * math.cos(J) - math.tan(I + K) / math.exp(H + G)
+M := math.pow(L, 2) + math.sqrt(K + J + I + H + G)
+N := math.log(M * K - L) + math.exp(J + I + H + G)
+O := math.sin(N) + math.cos(M) - math.tan(L * K) / math.exp(J + I)
+P := math.log(O * N - M) + math.pow(K, 3) / math.sqrt(L + M + N + O)
+
+// Even more complex operations
+Q := (A + B + C + D + E) * (F - G + H + I) / (math.sin(J + K) + math.cos(L + M) + math.tan(N + O))
+R := math.exp(Q) / (math.log(A + B + C + D + E + F + G + H + I + J + K + L + M + N + O) * math.sqrt(A * B * C * D * E * F * G * H * I * J * K * L * M * N * O))
+S := math.pow(Q + R, 4) - math.sqrt(A * B * C * D * E * F * G * H * I * J * K * L * M * N * O * P * Q * R)
+T := math.sin(S) + math.cos(Q * R * S) - math.tan(P * O * N * M * L * K * J * I * H * G * F * E * D * C * B * A)
+
+// Continue further
+U := math.log(T) + math.pow(S, 5) / math.sqrt(Q + R + S + T)
+V := math.sin(U) * math.cos(T) - math.tan(S + U) / math.exp(R + Q)
+W := math.pow(V, 3) + math.sqrt(T + S + R + Q)
+X := math.log(W * V - U) + math.exp(T + S + R + Q)
+Y := math.sin(X) + math.cos(W) - math.tan(V * U) / math.exp(T + S)
+Z := math.log(Y * X - W) + math.pow(U, 4) / math.sqrt(V + W + X + Y)
+
+// Further nesting and complexity
+var float AA = na
+var float BB = na
+var float CC = na
+var float DD = na
+var float EE = na
+var float FF = na
+var float GG = na
+var float HH = na
+var float II = na
+var float JJ = na
+var float KK = na
+var float LL = na
+var float MM = na
+var float NN = na
+var float OO = na
+var float PP = na
+var float QQ = na
+var float RR = na
+var float SS = na
+var float TT = na
+var float UU = na
+var float VV = na
+var float WW = na
+var float XX = na
+var float YY = na
+var float ZZ = na
+
+AA := math.sin(Z) * math.cos(Y) + math.tan(X) / math.exp(W)
+BB := math.log(Z) + math.pow(Y, 2) - math.sqrt(X)
+CC := (math.sin(AA) * math.cos(BB)) / (math.tan(CC) + math.exp(DD))
+DD := math.log(CC + AA * BB) - math.pow(BB, 3) / math.sqrt(AA + BB)
+EE := math.sin(DD) + math.cos(CC) - math.tan(BB * DD) / math.exp(AA + BB + CC)
+FF := math.log(EE * DD - CC) + math.pow(AA, 4) / math.sqrt(BB + CC + DD + EE)
+
+GG := (AA + BB + CC) * (DD - EE + FF) / (math.sin(AA + BB) + math.cos(CC + DD) + math.tan(EE + FF))
+HH := math.exp(GG) / (math.log(AA + BB + CC + DD + EE + FF) * math.sqrt(AA * BB * CC * DD * EE * FF))
+II := math.pow(GG + HH, 3) - math.sqrt(AA * BB * CC * DD * EE * FF * GG * HH)
+JJ := math.sin(II) + math.cos(GG * HH * II) - math.tan(FF * EE * DD * CC * BB * AA)
+
+KK := math.log(JJ) + math.pow(II, 5) / math.sqrt(GG + HH + II + JJ)
+LL := math.sin(KK) * math.cos(JJ) - math.tan(II + KK) / math.exp(HH + GG)
+MM := math.pow(LL, 2) + math.sqrt(KK + JJ + II + HH + GG)
+NN := math.log(MM * KK - LL) + math.exp(JJ + II + HH + GG)
+OO := math.sin(NN) + math.cos(MM) - math.tan(LL * KK) / math.exp(JJ + II)
+PP := math.log(OO * NN - MM) + math.pow(KK, 3) / math.sqrt(LL + MM + NN + OO)
+
+QQ := (AA + BB + CC + DD + EE) * (FF - GG + HH + II) / (math.sin(JJ + KK) + math.cos(LL + MM) + math.tan(NN + OO))
+RR := math.exp(QQ) / (math.log(AA + BB + CC + DD + EE+ FF + GG + HH + II + JJ + KK + LL + MM + NN + OO) * math.sqrt(AA * BB * CC * DD * EE * FF * GG * HH * II * JJ * KK * LL * MM * NN * OO))
+SS := math.pow(QQ + RR, 4) - math.sqrt(AA * BB * CC * DD * EE * FF * GG * HH * II * JJ * KK * LL * MM * NN * OO * PP * QQ * RR)
+TT := math.sin(SS) + math.cos(QQ * RR * SS) - math.tan(PP * OO * NN * MM * LL * KK * JJ * II * HH * GG * FF * EE * DD * CC * BB * AA)
+
+// Continue further
+UU := math.log(TT) + math.pow(SS, 5) / math.sqrt(QQ + RR + SS + TT)
+VV := math.sin(UU) * math.cos(TT) - math.tan(SS + UU) / math.exp(RR + QQ)
+WW := math.pow(VV, 3) + math.sqrt(TT + SS + RR + QQ)
+XX := math.log(WW * VV - UU) + math.exp(TT + SS + RR + QQ)
+YY := math.sin(XX) + math.cos(WW) - math.tan(VV * UU) / math.exp(TT + SS)
+ZZ := math.log(YY * XX - WW) + math.pow(UU, 4) / math.sqrt(VV + WW + XX + YY)
+
+// Further nesting and complexity
+var float AAA = na
+var float BBB = na
+var float CCC = na
+var float DDD = na
+var float EEE = na
+var float FFF = na
+var float GGG = na
+var float HHH = na
+var float III = na
+var float JJJ = na
+var float KKK = na
+var float LLL = na
+var float MMM = na
+var float NNN = na
+var float OOO = na
+var float PPP = na
+var float QQQ = na
+var float RRR = na
+var float SSS = na
+var float TTT = na
+var float UUU = na
+var float VVV = na
+var float WWW = na
+var float XXX = na
+var float YYY = na
+var float ZZZ = na
+
+AAA := math.sin(ZZ) * math.cos(YY) + math.tan(XX) / math.exp(WW)
+BBB := math.log(ZZ) + math.pow(YY, 2) - math.sqrt(XX)
+CCC := (math.sin(AAA) * math.cos(BBB)) / (math.tan(CCC) + math.exp(DDD))
+DDD := math.log(CCC + AAA * BBB) - math.pow(BBB, 3) / math.sqrt(AAA + BBB)
+EEE := math.sin(DDD) + math.cos(CCC) - math.tan(BBB * DDD) / math.exp(AAA + BBB + CCC)
+FFF := math.log(EEE * DDD - CCC) + math.pow(AAA, 4) / math.sqrt(BBB + CCC + DDD + EEE)
+
+GGG := (AAA + BBB + CCC) * (DDD - EEE + FFF) / (math.sin(AAA + BBB) + math.cos(CCC + DDD) + math.tan(EEE + FFF))
+HHH := math.exp(GGG) / (math.log(AAA + BBB + CCC + DDD + EEE + FFF) * math.sqrt(AAA * BBB * CCC * DDD * EEE * FFF))
+III := math.pow(GGG + HHH, 3) - math.sqrt(AAA * BBB * CCC * DDD * EEE * FFF * GGG * HHH)
+JJJ := math.sin(III) + math.cos(GGG * HHH * III) - math.tan(FFF * EEE * DDD * CCC * BBB * AAA)
+
+KKK := math.log(JJJ) + math.pow(III, 5) / math.sqrt(GGG + HHH + III + JJJ)
+LLL := math.sin(KKK) * math.cos(JJJ) - math.tan(III + KKK) / math.exp(HHH + GGG)
+MMM := math.pow(LLL, 2) + math.sqrt(KKK + JJJ + III + HHH + GGG)
+NNN := math.log(MMM * KKK - LLL) + math.exp(JJJ + III + HHH + GGG)
+OOO := math.sin(NNN) + math.cos(MMM) - math.tan(LLL * KKK) / math.exp(JJJ + III)
+PPP := math.log(OOO * NNN - MMM) + math.pow(KKK, 3) / math.sqrt(LLL + MMM + NNN + OOO)
+
+QQQ := (AAA + BBB + CCC + DDD + EEE) * (FFF - GGG + HHH + III) / (math.sin(JJJ + KKK) + math.cos(LLL + MMM) + math.tan(NNN + OOO))
+RRR := math.exp(QQQ) / (math.log(AAA + BBB + CCC + DDD + EEE + FFF + GGG + HHH + III + JJJ + KKK + LLL + MMM + NNN + OOO) * math.sqrt(AAA * BBB * CCC * DDD * EEE * FFF * GGG * HHH * III * JJJ * KKK * LLL * MMM * NNN * OOO))
+SSS := math.pow(QQQ + RRR, 4) - math.sqrt(AAA * BBB * CCC * DDD * EEE * FFF * GGG * HHH * III * JJJ * KKK * LLL * MMM * NNN * OOO * PPP * QQQ * RRR)
+TTT := math.sin(SSS) + math.cos(QQQ * RRR * SSS) - math.tan(PPP * OOO * NNN * MMM * LLL * KKK * JJJ * III * HHH * GGG * FFF * EEE * DDD * CCC * BBB * AAA)
+
+
+
+buySignal = trend == 1 and trend[1] == -1 //and barstate.isconfirmed
+//plotshape(buySignal ? up : na, title='UpTrend Begins', location=location.belowbar, style=shape.circle, size=size.tiny, color=color.new(color.green, 0))
+//dnPlot = plot(trend == 1 ? na : dn, title='Down Trend', style=plot.style_linebr, linewidth=2, color=color.new(color.red, 0))
+sellSignal = trend == -1 and trend[1] == 1 //and barstate.isconfirmed
+//plotshape(sellSignal ? dn : na, title='DownTrend Begins', location=location.absolute, style=shape.circle, size=size.tiny, color=color.new(color.red, 0))
+mPlot = plot(ohlc4, title='', style=plot.style_circles, linewidth=0)
+longFillColor = highlighting ? trend == 1 ? color.green : color.white : color.white
+shortFillColor = highlighting ? trend == -1 ? color.red : color.white : color.white
+// fill(mPlot, upPlot, title="UpTrend Highligter", color=longFillColor)
+// fill(mPlot, dnPlot, title="DownTrend Highligter", color=shortFillColor)
+// alertcondition(buySignal, title="SuperTrend Buy", message="SuperTrend Buy!")
+// alertcondition(sellSignal, title="SuperTrend Sell", message="SuperTrend Sell!")
+// changeCond = trend != trend[1]
+// alertcondition(changeCond, title="SuperTrend Direction Change", message="SuperTrend has changed direction!")
+
+
+true_trade = false
+true_trade := true_trade[1]
+
+
+// if timeframe.period == 'D' or timeframe.period == 'W' or timeframe.period == 'M'
+//     buySignal := false
+//     sellSignal := false 
+
+// // - INPUTS
+
+//adding date ranges 
+startDate = 1
+startMonth = 1
+startYear = 2000
+
+endDate = 05
+endMonth = 05
+endYear = 2024
+
+// STEP 2:
+// Look if the close time of the current bar
+// falls inside the date range
+inDateRange = (time >= timestamp(syminfo.timezone, startYear,
+         startMonth, startDate, 0, 0)) and
+     (time < timestamp(syminfo.timezone, endYear, endMonth, endDate, 0, 0))
+
+
+
+plotshape(buySignal  and not inDateRange, color=color.new(color.green, 0), style=shape.labelup, size=size.small, text='Buy', textcolor=color.new(color.white, 0), location=location.belowbar,offset =0,editable = false)
+plotshape(sellSignal and not inDateRange, color=color.new(color.red, 0), style=shape.labeldown, size=size.small, text='Sell', textcolor=color.new(color.white, 0), location=location.abovebar,offset = 0,editable = false)
+
+plotshape(buySignal and inDateRange, title='Buy', text='Buy', location=location.belowbar, style=shape.labelup, size=size.small, color=color.new(color.green, 0), textcolor=color.new(color.white, 0),offset = -2)
+plotshape(sellSignal and inDateRange, title='Sell', text='Sell', location=location.abovebar, style=shape.labeldown, size=size.small, color=color.new(color.red, 0), textcolor=color.new(color.white, 0),offset = -2)
+
+
+//barcolor(trend == 1 and inDateRange? color.rgb(43, 240, 4) : color.rgb(255, 0, 0),offset = 0)
+barcolor(trend == 1 and inDateRange ? color.rgb(43, 240, 4) : na,offset = -2)
+barcolor(trend == -1 and inDateRange ? color.rgb(245, 10, 10) : na,offset = -2)
+
+barcolor(trend == 1 and not inDateRange ? color.rgb(43, 240, 4) : na,offset = 0)
+barcolor(trend == -1 and not inDateRange ? color.rgb(245, 10, 10) : na,offset = 0)
+
+barcolor(trend == 1 and inDateRange ? color.rgb(43, 240, 4) : na,offset = -2)
+barcolor(trend == -1 and inDateRange ? color.rgb(245, 10, 10) : na,offset = -2)
+
+barcolor(trend == 1 and not inDateRange ? color.rgb(43, 240, 4) : na,offset = 0)
+barcolor(trend == -1 and not inDateRange ? color.rgb(245, 10, 10) : na,offset = 0)
+
+barcolor(trend == 1 and inDateRange ? color.rgb(43, 240, 4) : na,offset = -2)
+barcolor(trend == -1 and inDateRange ? color.rgb(245, 10, 10) : na,offset = -2)
+
+barcolor(trend == 1 and not inDateRange ? color.rgb(43, 240, 4) : na,offset = 0)
+barcolor(trend == -1 and not inDateRange ? color.rgb(245, 10, 10) : na,offset = 0)
+
+Alert_MessageLong = '[{"symbol":"' + input_symbol + '","side":"buy","' + input_account1 + 'lot":"' + str.tostring(input_lot1)+'"}]'
+Alert_MessageShort = '[{"symbol":"' + input_symbol + '","side":"sell","' + input_account1 + 'lot":"' + str.tostring(input_lot1) + '"}]'
+
+exit_alert = '[{"symbol":"' + input_symbol + '","account":"' + input_account1 + '","close":"all"}]'
+
+
+
+
+
+
+// if buySignal 
+//     alert('BUY Alert Triggered',alert.freq_once_per_bar_close)
+
+// if sellSignal
+//     alert('SELL Alert Triggered',alert.freq_once_per_bar_close)
+
+alertcondition(buySignal,"Buy Alert")
+alertcondition(sellSignal,"Sell Alert")
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+lb = input.int(5, title='Support/Resistance', minval=1)
+rb = 5//input.int(5, title='Right Bars', minval=1)
+showsupres = true//input.bool(true, title='Support/Resistance', inline='srcol')
+supcol = color.lime//input.color(color.lime, title='', inline='srcol')
+rescol = color.red//input.color(color.red, title='', inline='srcol')
+srlinestyle = line.style_dashed//input.string(line.style_solid, title='Line Style/Width', options=[line.style_solid, line.style_dashed, line.style_dotted], inline='style')
+srlinewidth = 1//input.int(3, title='', minval=1, maxval=5, inline='style')
+changebarcol = false//input.bool(true, title='Change Bar Color', inline='bcol')
+bcolup = color.blue//input.color(color.blue, title='', inline='bcol')
+bcoldn = color.black//input.color(color.black, title='', inline='bcol')
+
+ph = ta.pivothigh(lb, rb)
+pl = ta.pivotlow(lb, rb)
+
+iff_1 = pl ? -1 : na  // trend11 direction
+hl = ph ? 1 : iff_1
+iff_2 = pl ? pl : na  // similar to zigzag but may have multiple highs/lows
+zz = ph ? ph : iff_2
+valuewhen_1 = ta.valuewhen(hl, hl, 1)
+valuewhen_2 = ta.valuewhen(zz, zz, 1)
+zz := pl and hl == -1 and valuewhen_1 == -1 and pl > valuewhen_2 ? na : zz
+valuewhen_3 = ta.valuewhen(hl, hl, 1)
+valuewhen_4 = ta.valuewhen(zz, zz, 1)
+zz := ph and hl == 1 and valuewhen_3 == 1 and ph < valuewhen_4 ? na : zz
+
+valuewhen_5 = ta.valuewhen(hl, hl, 1)
+valuewhen_6 = ta.valuewhen(zz, zz, 1)
+hl := hl == -1 and valuewhen_5 == 1 and zz > valuewhen_6 ? na : hl
+valuewhen_7 = ta.valuewhen(hl, hl, 1)
+valuewhen_8 = ta.valuewhen(zz, zz, 1)
+hl := hl == 1 and valuewhen_7 == -1 and zz < valuewhen_8 ? na : hl
+zz := na(hl) ? na : zz
+
+findprevious() =>  // finds previous three points (b, c, d, e)
+    ehl = hl == 1 ? -1 : 1
+    loc1 = 0.0
+    loc2 = 0.0
+    loc3 = 0.0
+    loc4 = 0.0
+    xx = 0
+    for x = 1 to 1000 by 1
+        if hl[x] == ehl and not na(zz[x])
+            loc1 := zz[x]
+            xx := x + 1
+            break
+    ehl := hl
+    for x = xx to 1000 by 1
+        if hl[x] == ehl and not na(zz[x])
+            loc2 := zz[x]
+            xx := x + 1
+            break
+    ehl := hl == 1 ? -1 : 1
+    for x = xx to 1000 by 1
+        if hl[x] == ehl and not na(zz[x])
+            loc3 := zz[x]
+            xx := x + 1
+            break
+    ehl := hl
+    for x = xx to 1000 by 1
+        if hl[x] == ehl and not na(zz[x])
+            loc4 := zz[x]
+            break
+    [loc1, loc2, loc3, loc4]
+
+float a = na
+float b = na
+float c = na
+float d = na
+float e = na
+if not na(hl)
+    [loc1, loc2, loc3, loc4] = findprevious()
+    a := zz
+    b := loc1
+    c := loc2
+    d := loc3
+    e := loc4
+    e
+
+_hh = zz and a > b and a > c and c > b and c > d
+_ll = zz and a < b and a < c and c < b and c < d
+_hl = zz and (a >= c and b > c and b > d and d > c and d > e or a < b and a > c and b < d) 
+_lh = zz and (a <= c and b < c and b < d and d < c and d < e or a > b and a < c and b > d)
+
+// plotshape(_hl, text='HL', title='Higher Low', style=shape.labelup, color=color.new(color.lime, 0), textcolor=color.new(color.black, 0), location=location.belowbar, offset=-rb)
+// plotshape(_hh, text='HH', title='Higher High', style=shape.labeldown, color=color.new(color.lime, 0), textcolor=color.new(color.black, 0), location=location.abovebar, offset=-rb)
+// plotshape(_ll, text='LL', title='Lower Low', style=shape.labelup, color=color.new(color.red, 0), textcolor=color.new(color.white, 0), location=location.belowbar, offset=-rb)
+// plotshape(_lh, text='LH', title='Lower High', style=shape.labeldown, color=color.new(color.red, 0), textcolor=color.new(color.white, 0), location=location.abovebar, offset=-rb)
+
+float res = na
+float sup = na
+res := _lh ? zz : res[1]
+sup := _hl ? zz : sup[1]
+
+int trend1 = na
+iff_3 = close < sup ? -1 : nz(trend1[1])
+trend1 := close > res ? 1 : iff_3
+
+res := trend1 == 1 and _hh or trend1 == -1 and _lh ? zz : res
+sup := trend1 == 1 and _hl or trend1 == -1 and _ll ? zz : sup
+rechange = res != res[1]
+suchange = sup != sup[1]
+
+var line resline = na
+var line supline = na
+if showsupres
+    if rechange and trend == -1
+        line.set_x2(resline, bar_index)
+        line.set_extend(resline, extend=extend.none)
+        resline := line.new(x1=bar_index - rb, y1=res, x2=bar_index, y2=res, color=rescol, extend=extend.right, style=srlinestyle, width=srlinewidth)
+        resline
+
+    if suchange and trend == 1
+        line.set_x2(supline, bar_index)
+        line.set_extend(supline, extend=extend.none)
+        supline := line.new(x1=bar_index - rb, y1=sup, x2=bar_index, y2=sup, color=supcol, extend=extend.right, style=srlinestyle, width=srlinewidth)
+        supline
+
+iff_4 = trend1 == 1 ? bcolup : bcoldn
+barcolor(color=changebarcol ? iff_4 : na)
+
+if trend == 1
+    line.delete(resline)
+
+if trend == -1
+    line.delete(supline)
+
+
+
+// length = lb//input(4, title='High/Low length')
+// h = ta.highest(high, length * 2 + 1)
+// l = ta.lowest(low, length * 2 + 1)
+// f_isMin(len) =>
+//     l == low[len]
+// f_isMax(len) =>
+//     h == high[len]
+
+// var dirUp = false
+// var lastLow = high * 100
+// var lastHigh = 0.0
+// var timeLow = bar_index
+// var timeHigh = bar_index
+// var line li = na
+// f_drawLine() =>
+//     _li_color = dirUp ? color.teal : color.orange
+//     line.new(timeHigh - length, lastHigh, timeLow - length, lastLow, xloc.bar_index, color=_li_color, width=2)
+
+// if dirUp
+//     if f_isMin(length) and low[length] < lastLow
+//         lastLow := low[length]
+//         timeLow := bar_index
+//         line.delete(li)
+//         li := f_drawLine()
+//         li
+
+//     if f_isMax(length) and high[length] > lastLow
+//         lastHigh := high[length]
+//         timeHigh := bar_index
+//         dirUp := false
+//         li := f_drawLine()
+//         li
+
+// if not dirUp
+//     if f_isMax(length) and high[length] > lastHigh
+//         lastHigh := high[length]
+//         timeHigh := bar_index
+//         line.delete(li)
+//         li := f_drawLine()
+//         li
+//     if f_isMin(length) and low[length] < lastHigh
+//         lastLow := low[length]
+//         timeLow := bar_index
+//         dirUp := true
+//         li := f_drawLine()
+//         if f_isMax(length) and high[length] > lastLow
+//             lastHigh := high[length]
+//             timeHigh := bar_index
+//             dirUp := false
+//             li := f_drawLine()
+//             li
+
+rebuy = ta.crossover(close,sup) //and trend == 1
+resell = ta.crossunder(close,res) //and trend == -1 
+
+
+rebuy1 = ta.crossover(close,res) //and trend == 1
+resell1 = ta.crossunder(close,sup) //and trend == -1 
+
+
+long_entered = false
+long_entered := long_entered[1]
+
+short_entered = false 
+short_entered := short_entered[1]
+
+if buySignal or rebuy
+    long_entered := true
+
+if rebuy1 or trend == -1 
+    long_entered := false
+
+
+if sellSignal or resell
+    short_entered := true
+
+if resell1 or trend == 1 
+    short_entered := false
+
+
+
+alertcondition(rebuy,"Re-Entry-Buy")
+alertcondition(resell,"Re-Entry-Sell")
+
+rebuy := rebuy and long_entered[1] == false
+resell := resell and short_entered[1] == false
+
+if buySignal or rebuy
+    alert(Alert_MessageLong,alert.freq_once_per_bar_close)
+
+if sellSignal or resell
+    alert(Alert_MessageShort,alert.freq_once_per_bar_close)
+
+
+
+plotshape(rebuy, color=color.new(#d641ff, 0), style=shape.triangleup, text='RE-ENTRY', textcolor=color.new(#d641ff, 0), location=location.belowbar,size=size.tiny)
+plotshape(resell, color=color.new(#faea07, 0), style=shape.triangledown, text='RE-ENTRY', textcolor=color.new(#faea07, 0), location=location.abovebar,size=size.tiny)
+
+
+plotshape(rebuy1, color=color.new(#d641ff, 0), text='🚀', textcolor=color.new(#d641ff, 0), location=location.abovebar,size=size.tiny)
+plotshape(resell1, color=color.new(#f80101, 0), text='📉', textcolor=color.new(#faea07, 0), location=location.belowbar,size=size.tiny)
+
+if rebuy1 or resell1
+    alert(exit_alert,alert.freq_once_per_bar_close)
